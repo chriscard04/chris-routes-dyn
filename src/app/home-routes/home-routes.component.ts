@@ -1,17 +1,21 @@
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, inject, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { AddRouteComponent } from '../add-route/add-route.component'
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import { Ruta } from '../interfaces/route.interface'
 
 
-interface Ruta {
-  id_ruta: number;
-  conductor: string;
-  fecha_entrega: string;
-  ordenes_entrega: number;
-  notas: string;
-}
 
 
 @Component({
@@ -26,7 +30,8 @@ interface Ruta {
   styleUrl: './home-routes.component.scss'
 })
 export class HomeRoutesComponent implements AfterViewInit{
-  @ViewChild(MatPaginator) paginator!: MatPaginator; // <-- Use ViewChild
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  readonly dialog = inject(MatDialog);
 
   rutas: Ruta[] = [
     { id_ruta: 1, conductor: 'John Doe', fecha_entrega: '2024-11-20', ordenes_entrega: 10, notas: 'On time delivery' },
@@ -63,6 +68,17 @@ export class HomeRoutesComponent implements AfterViewInit{
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  openRoute(route: Ruta) {
+    console.log(route);
+
+    const dialogRef = this.dialog.open(AddRouteComponent, {
+      data: route,
+      height: '400px',
+      width: '600px',
+    });
+
   }
 
 }
