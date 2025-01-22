@@ -13,8 +13,9 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { Ruta } from '../interfaces/route.interface'
-
+import { Ruta, Orden } from '../interfaces/route.interface'
+import { HttpClientModule } from '@angular/common/http';
+import { ApiService } from '../api.service'
 
 
 
@@ -25,31 +26,20 @@ import { Ruta } from '../interfaces/route.interface'
     MatTableModule,
     MatIconModule,
     MatPaginator,
+    HttpClientModule
   ],
   templateUrl: './home-routes.component.html',
-  styleUrl: './home-routes.component.scss'
+  styleUrl: './home-routes.component.scss',
+  providers: [ApiService]
 })
 export class HomeRoutesComponent implements AfterViewInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   readonly dialog = inject(MatDialog);
+  private apiService = inject(ApiService);
 
-  rutas: Ruta[] = [
-    { id_ruta: 1, conductor: 'John Doe', fecha_entrega: '2024-11-20', ordenes_entrega: 10, notas: 'On time delivery' },
-    { id_ruta: 2, conductor: 'Jane Smith', fecha_entrega: '2024-11-21', ordenes_entrega: 8, notas: 'Slight delay' },
-    { id_ruta: 3, conductor: 'Michael Johnson', fecha_entrega: '2024-11-22', ordenes_entrega: 12, notas: 'Heavy traffic' },
-    { id_ruta: 4, conductor: 'Emily Davis', fecha_entrega: '2024-11-23', ordenes_entrega: 5, notas: 'Early delivery' },
-    { id_ruta: 5, conductor: 'David Lee', fecha_entrega: '2024-11-24', ordenes_entrega: 15, notas: 'Multiple stops' },
-    { id_ruta: 6,  conductor: 'Olivia Brown', fecha_entrega: '2024-11-25', ordenes_entrega: 7, notas: 'Weather delay' },
-    { id_ruta: 7, conductor: 'William Wilson', fecha_entrega: '2024-11-26', ordenes_entrega: 11, notas: 'On time delivery' },
-    { id_ruta: 8, conductor: 'Sophia Taylor', fecha_entrega: '2024-11-27', ordenes_entrega: 9, notas: 'Slight detour' },
-    { id_ruta: 9, conductor:  'James Anderson', fecha_entrega: '2024-11-28', ordenes_entrega: 13, notas: 'Traffic accident' },
-    { id_ruta: 10, conductor: 'Ava Martinez', fecha_entrega: '2024-11-29', ordenes_entrega: 6, notas: 'Early delivery' },
-    { id_ruta: 11, conductor: 'Benjamin Thomas', fecha_entrega: '2024-11-30', ordenes_entrega: 14, notas: 'Multiple stops' },
-    { id_ruta: 12, conductor: 'Charlotte White', fecha_entrega: '2024-12-01', ordenes_entrega: 10, notas: 'On time delivery' }
-  ];
 
-  displayedColumns: string[] = ['Ruta', 'Conductor', 'Fecha Entrega', 'Ordenes Entrega', 'Notas', 'Acciones'];
-  dataSource = new MatTableDataSource<Ruta>(this.rutas);
+  displayedColumns: string[] = ['Ruta', 'Conductor', 'Fecha Entrega', 'Notas', 'Acciones'];
+  dataSource = new MatTableDataSource<Ruta>([]);
 
 
   columns = [
@@ -60,10 +50,27 @@ export class HomeRoutesComponent implements AfterViewInit{
     { name: 'Notas' }
   ];
 
+  constructor(){
+    this.getRutas();
+  }
+
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
+
+  getRutas() {
+    this.apiService.getRutas().subscribe((rutas: Ruta[]) => {
+      console.log(rutas)
+      this.dataSource = new MatTableDataSource<Ruta>(rutas);
+      },
+
+      error => {
+        console.error('Error al obtener rutas:', error);
+      }
+      );
+  }
+
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

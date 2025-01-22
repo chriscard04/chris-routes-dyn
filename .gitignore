@@ -11,6 +11,11 @@
 npm-debug.log
 yarn-error.log
 
+# Api NodeModules
+api/node_modules
+api/npm-debug.log
+api/yarn-error.log
+
 # IDEs and editors
 .idea/
 .project
@@ -41,3 +46,5 @@ testem.log
 .DS_Store
 Thumbs.db
 package-lock.json
+
+
