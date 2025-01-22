@@ -1,4 +1,5 @@
 import { Component, AfterViewInit, inject, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -15,7 +16,8 @@ import {
 } from '@angular/material/dialog';
 import { Ruta, Orden } from '../interfaces/route.interface'
 import { HttpClientModule } from '@angular/common/http';
-import { ApiService } from '../api.service'
+import { ApiService } from '../services/api.service'
+import { DriversService } from '../services/drivers.service'
 
 
 
@@ -26,19 +28,21 @@ import { ApiService } from '../api.service'
     MatTableModule,
     MatIconModule,
     MatPaginator,
-    HttpClientModule
+    HttpClientModule,
+    CommonModule
   ],
   templateUrl: './home-routes.component.html',
   styleUrl: './home-routes.component.scss',
-  providers: [ApiService]
+  providers: [ApiService, DriversService]
 })
 export class HomeRoutesComponent implements AfterViewInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   readonly dialog = inject(MatDialog);
   private apiService = inject(ApiService);
+  private driversService = inject(DriversService);
 
 
-  displayedColumns: string[] = ['Ruta', 'Conductor', 'Fecha Entrega', 'Notas', 'Acciones'];
+  displayedColumns: string[] = ['Ruta', 'Conductor', 'Fecha Entrega', 'Acciones'];
   dataSource = new MatTableDataSource<Ruta>([]);
 
 
@@ -56,13 +60,16 @@ export class HomeRoutesComponent implements AfterViewInit{
 
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+
   }
 
   getRutas() {
-    this.apiService.getRutas().subscribe((rutas: Ruta[]) => {
-      console.log(rutas)
+    this.apiService.getRutas().subscribe(async (rutas: Ruta[]) => {
+      for (const ruta of rutas) {
+        ruta.conductorName = await this.getConductorName(ruta.conductor.toString())
+      }
       this.dataSource = new MatTableDataSource<Ruta>(rutas);
+      this.dataSource.paginator = this.paginator;
       },
 
       error => {
@@ -71,6 +78,14 @@ export class HomeRoutesComponent implements AfterViewInit{
       );
   }
 
+  async getConductorName(id: string): Promise<string | ''> {
+    const name = await this.driversService.getConductor(id);
+    if (name) {
+      return Promise.resolve(name);
+    } else {
+      return Promise.resolve('');
+    }
+  }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -78,8 +93,6 @@ export class HomeRoutesComponent implements AfterViewInit{
   }
 
   openRoute(route: Ruta) {
-    console.log(route);
-
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: route,
       height: '400px',

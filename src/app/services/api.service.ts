@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Ruta, Orden } from './interfaces/route.interface'
+import { Ruta, Orden } from '../interfaces/route.interface'
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Injectable({

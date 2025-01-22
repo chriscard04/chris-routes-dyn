@@ -8,9 +8,9 @@
   <p>
     <mat-form-field appearance="fill">
       <mat-label>Select a Driver</mat-label>
-      <mat-select [(ngModel)]="selectedDriver" name="driver">
-        @for (driver of drivers; track driver.value) {
-          <mat-option [value]="driver.value">{{driver.label}}</mat-option>
+      <mat-select [(ngModel)]="conductorSeleccionado" name="driver">
+        @for (driver of conductores; track driver.ID) {
+          <mat-option [value]="driver">{{driver.NAME}}</mat-option>
         }
       </mat-select>
     </mat-form-field>

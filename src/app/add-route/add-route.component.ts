@@ -1,17 +1,16 @@
-import { Component, inject, model } from '@angular/core';
+import { Component, inject, model, OnInit } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { Ruta } from '../interfaces/route.interface'
+import { Ruta, Conductor } from '../interfaces/route.interface'
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
-
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import csv from 'csvtojson';
+import { DriversService } from '../services/drivers.service'
+import { HttpClientModule } from '@angular/common/http';
 
 
 @Component({
@@ -25,32 +24,33 @@ import csv from 'csvtojson';
     HttpClientModule
   ],
   templateUrl: './add-route.component.html',
-  styleUrl: './add-route.component.scss'
+  styleUrl: './add-route.component.scss',
+  providers: [DriversService]
 })
-export class AddRouteComponent {
+export class AddRouteComponent implements OnInit{
   readonly dialogRef = inject(MatDialogRef<AddRouteComponent>);
   readonly data = inject<Ruta>(MAT_DIALOG_DATA);
   readonly route = this.data;
+  driversService = inject(DriversService);
 
-  drivers: any[] = [];
-  selectedDriver: any;
+  conductores: Conductor[] = [];
+  conductorSeleccionado: Conductor = {ID: '0', NAME: ''};
 
-  constructor(private http: HttpClient){
-    this.cargarConductores();
+  constructor() {
+    this.driversService.getConductores().then((conductores: Conductor[]) => {
+      this.conductores = conductores;
+      this.cargarConductor();
+    });
   }
 
-  async cargarConductores() {
-    try {
-      const csvData = await this.http.get('assets/drivers.csv', { responseType: 'text' }).toPromise();
-      const jsonData = await csv().fromString(csvData || '');
-      this.drivers = jsonData
-        .map((item: any) => ({
-            value: item.ID,
-            label: item.NAME
-          }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || ''));
-    } catch (error) {
-      console.error('Error en la carga de datos CSV. ', error);
+  ngOnInit() {}
+
+  private async cargarConductor() {
+    const id = this.route.conductor.toString();
+    if (id) {
+      this.conductorSeleccionado = await this.driversService.getConductorData(id);
+    } else {
+      this.conductorSeleccionado = { ID: '0', NAME: '' };
     }
   }
 
