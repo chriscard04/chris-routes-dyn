@@ -130,21 +130,22 @@ export class AddRouteComponent implements OnInit{
 
     // Se verifica si existe la ruta en el sistema
     this.apiService.getRuta(parseInt(value)).subscribe({
-      next: (ruta: Ruta) => {
+      next: (resp: any) => {
 
-        // Handle the successful response
-        console.log('Data received:', ruta);
-        this.route = ruta;
-        this.cargarConductor();
-        this.isEditRoute = true;
+        if(resp.message === 'success'){
+          const ruta: Ruta = resp.data;
+          console.log('Data received:', ruta);
+          this.route = ruta;
+          this.cargarConductor();
+          this.isEditRoute = true;
+        } else {
+          console.log('Ha ocurrido un error. Detalles: ', resp.error.message);
+        }
       },
       error: (err) => {
         console.log('An error occurred:', err);
-        // Handle the error
       },
-      complete: () => {
-        console.log('Request completed.');
-      }
+      complete: () => {}
       }
     );
 
@@ -152,42 +153,46 @@ export class AddRouteComponent implements OnInit{
     // Se consulta en el servicio externo si existe la ruta.
     if (!this.isEditRoute) {
       this.apiService.getRoute(parseInt(value)).subscribe({
-        next: async (route: Route | null) => {
+        next: async (resp: any) => {
           // Handle the successful response
-          console.log('Data received:', route);
-          this.conductorSeleccionado = await this.driversService.getConductorData(route?.driverId.toString());
-          this.route.id_ruta = route?.id ? parseInt(route.id) : 0;
+          if(resp.message === 'success'){
+            const route: Route = resp.data;
 
-          this.routeForm.patchValue({
-            id_ruta: route?.id,
-            conductor: this.conductorSeleccionado,
-            fecha_entrega: route?.date,
-            notas: route?.notes
-          });
+            this.conductorSeleccionado = await this.driversService.getConductorData(route?.driverId.toString());
+            this.route.id_ruta = route?.id ? parseInt(route.id) : 0;
 
-          // Siempre y cuando se reciba una ruta, se habilita para agregarla / editarla
-          route?.id ? this.readyToAdd = true : this.readyToAdd = false;
-          if (route && route.orders) {
-            for (const order of route.orders) {
-              tempOrders.push({
-                id_orden: order.id,
-                valor: order.value,
-                secuencia: order.sequence,
-                prioritario: order.priority
-              });
+            this.routeForm.patchValue({
+              id_ruta: route?.id,
+              conductor: this.conductorSeleccionado,
+              fecha_entrega: route?.date,
+              notas: route?.notes
+            });
+
+            // Siempre y cuando se reciba una ruta, se habilita para agregarla / editarla
+            route?.id ? this.readyToAdd = true : this.readyToAdd = false;
+            if (route && route.orders) {
+              for (const order of route.orders) {
+                tempOrders.push({
+                  id_orden: order.id,
+                  valor: order.value,
+                  secuencia: order.sequence,
+                  prioritario: order.priority
+                });
+              }
             }
+            this.dataSource = new MatTableDataSource<Orden>(tempOrders);
+            this.dataSource.paginator = this.paginator;
+          } else {
+            console.log('Ha ocurrido un error. Detalles: ', resp.error.message);
           }
-          this.dataSource = new MatTableDataSource<Orden>(tempOrders);
-          this.dataSource.paginator = this.paginator;
+
         },
         error: (err) => {
           console.log('An error occurred:', err);
           // Handle the error
         },
         complete: () => {
-          console.log('Request completed.');
-
-         /*  if (!this.isEditRoute && !this.readyToAdd) {
+        /*  if (!this.isEditRoute && !this.readyToAdd) {
             this._snackBar.open('Upss la ruta no existe', 'No podemos continuar',{
               duration: 5000,
               horizontalPosition: 'center',
@@ -201,11 +206,41 @@ export class AddRouteComponent implements OnInit{
 
   }
 
+  updatePrioridad(orden: Orden) {
+    orden.prioritario = !orden.prioritario;
+    this.dataSource = new MatTableDataSource(this.dataSource.data);
+    this.dataSource.paginator = this.paginator;
+  }
+
+  // Asingna una copia estructurada de la Ruta lista para guardar
+  mapToRuta(formValue: any): Ruta {
+    return {
+      id_ruta: parseInt(formValue.id_ruta),
+      conductor: parseInt(formValue.conductor.ID), // Assuming conductor is an object with a 'value' property
+      fecha_entrega: new Date(formValue.fecha_entrega).toISOString(),
+      notas: formValue.notas,
+      ordenes: this.dataSource.data
+    };
+  }
 
   guardarRuta() {
-    console.log(this.routeForm.value);
-    console.log(this.dataSource.data);
+    let rutaFormValue:Ruta =  this.mapToRuta(this.routeForm.value);
 
+    this.apiService.crearRuta(rutaFormValue).subscribe({
+      next: (response: any) => {
+        if (response.message) {
+          this.dialogRef.close('Datos Guardados!');
+        }
+      },
+      error: (err) => {
+        console.log('An error occurred:', err);
+        // Handle the error
+      },
+      complete: () => {
+        console.log('Request completed.');
+      }
+      }
+    );
   }
 
 }

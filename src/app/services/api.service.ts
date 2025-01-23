@@ -7,17 +7,16 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:3011/rutas';
-  private baseExtUrl = 'http://localhost:3000/routes';
+  private baseUrl = 'http://localhost:3011';
 
   constructor(private http: HttpClient) { }
 
   getRutas(): Observable<Ruta[]> {
-      return this.http.get<Ruta[]>(this.baseUrl);
+      return this.http.get<Ruta[]>(`${this.baseUrl}/rutas`);
   }
 
   getRuta(id: number): Observable<Ruta> {
-    return this.http.get<Ruta>(`${this.baseUrl}/${id}`)
+    return this.http.get<Ruta>(`${this.baseUrl}/rutas/${id}`)
       .pipe(
         catchError((error:any) => {
           if (error.status === 404) {
@@ -34,15 +33,17 @@ export class ApiService {
   }
 
   crearRuta(ruta: Ruta): Observable<Ruta> {
-    return this.http.post<Ruta>(this.baseUrl, ruta);
+    return this.http.post<Ruta>(`${this.baseUrl}/rutas`, ruta).pipe(
+      catchError((error:any) => {
+          console.error('An error occurred while fetching the route:', error);
+          return EMPTY ; //throwError(() => new Error('Network error'));
+      })
+    );
   }
 
-  getRoutes(): Observable<Route[]> {
-      return this.http.get<Route[]>(this.baseExtUrl);
-  }
 
   getRoute(id: number): Observable<Route | null> {
-    return this.http.get<Route>(`${this.baseExtUrl}/${id}`)
+    return this.http.get<Route>(`${this.baseUrl}/extroute/${id}`)
       .pipe(
         catchError((error:any) => {
           if (error.status === 404) {

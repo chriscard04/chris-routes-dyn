@@ -1,6 +1,6 @@
 export interface Ruta {
   id_ruta: number;
-  conductor: string;
+  conductor: number;
   conductorName?: string;
   fecha_entrega: string;
   ordenes: Orden[];

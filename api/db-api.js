@@ -1,6 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const port = 3011;
@@ -162,7 +163,7 @@ app.get('/rutas/:id_ruta', async (req, res) => {
     `, [id_ruta]);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Ruta no encontrada' });
+      res.json({ message: 'error', error: {message: 'No se ha encontrado la ruta en el sistema.'} });
     }
 
     const ruta = {
@@ -182,15 +183,26 @@ app.get('/rutas/:id_ruta', async (req, res) => {
       });
     }
 
-    res.json(ruta);
+    res.json({ message: 'success', data: ruta }); // Send response
 
   } catch (error) {
-    console.error('Error al obtener la ruta:', error);
-    res.status(500).json({ error: 'Error al obtener la ruta' });
+    res.json({ message: 'error', error: error });
   }
 });
 
+// External API Call
+app.get('/extroute/:id', async (req, res) => {
+  const id = req.params.id; // Extract ID from request parameters
 
+  try {
+    // External API call with ID parameter
+    const externalApiResponse = await axios.get(`http://localhost:3000/routes/${id}`);
+    const dataFromExternalApi = externalApiResponse.data;
+    res.json({ message: 'success', data: dataFromExternalApi });
+  } catch (error) {
+    res.json({ message: 'error', error: error });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

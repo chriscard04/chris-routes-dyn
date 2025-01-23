@@ -34,13 +34,13 @@ export class DriversService {
     }
   }
 
-  async getConductor(id: string): Promise<string | null > {
+  async getConductor(id: number): Promise<string | null > {
     try {
       if (this.drivers.length === 0) {
         await this.cargarConductores();
       }
 
-      const conductor = this.drivers.find(cond => cond.ID === id);
+      const conductor = this.drivers.find(cond => cond.ID === id.toString());
       return conductor ? conductor.NAME : null;
     } catch (error) {
       console.error('Error al obtener nombre del conductor. ', error);

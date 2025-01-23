@@ -69,7 +69,7 @@ export class HomeRoutesComponent implements AfterViewInit{
   getRutas() {
     this.apiService.getRutas().subscribe(async (rutas: Ruta[]) => {
       for (const ruta of rutas) {
-        ruta.conductorName = await this.getConductorName(ruta.conductor.toString())
+        ruta.conductorName = await this.getConductorName(ruta.conductor)
       }
       this.dataSource = new MatTableDataSource<Ruta>(rutas);
       this.dataSource.paginator = this.paginator;
@@ -81,7 +81,7 @@ export class HomeRoutesComponent implements AfterViewInit{
       );
   }
 
-  async getConductorName(id: string): Promise<string | ''> {
+  async getConductorName(id: number): Promise<string | ''> {
     const name = await this.driversService.getConductor(id);
     if (name) {
       return Promise.resolve(name);
@@ -113,6 +113,11 @@ export class HomeRoutesComponent implements AfterViewInit{
     });
 
     dialogRef.componentInstance.isEditRoute = false;
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      this.getRutas();
+    });
   }
 
 }
