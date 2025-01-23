@@ -98,7 +98,7 @@ export class HomeRoutesComponent implements AfterViewInit{
   openRoute(route: Ruta) {
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: route,
-      height: '800px',
+      height: '675px',
       width: '700px',
     });
 
@@ -108,7 +108,7 @@ export class HomeRoutesComponent implements AfterViewInit{
   newRoute() {
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: null,
-      height: '800px',
+      height: '750px',
       width: '700px',
     });
 

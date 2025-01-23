@@ -1,4 +1,4 @@
-<mat-toolbar class="p-4 mt-3">
+<mat-toolbar class="p-4 position-sticky top-0 bg-white" style="z-index: 99;">
   <span class="text-primary">{{isEditRoute ? 'Ver y Editar' : 'Añadir'}} Ruta</span>
 </mat-toolbar>
 <div class="px-4 mt-3">
@@ -55,25 +55,25 @@
   </form>
 
 
-    <table class="shadow" mat-table [dataSource]="dataSource">
+    <table class="shadow small-table" mat-table [dataSource]="dataSource">
 
       <ng-container matColumnDef="secuencia">
-        <th class="" mat-header-cell *matHeaderCellDef>#</th>
+        <th mat-header-cell *matHeaderCellDef>#</th>
         <td mat-cell *matCellDef="let orden"> {{orden.secuencia}} </td>
       </ng-container>
 
       <ng-container matColumnDef="id_orden">
-        <th class="" mat-header-cell *matHeaderCellDef> Orden </th>
+        <th mat-header-cell *matHeaderCellDef> Orden </th>
         <td mat-cell *matCellDef="let orden"> {{ orden.id_orden }}  </td>
       </ng-container>
 
       <ng-container matColumnDef="valor">
-        <th class="" mat-header-cell *matHeaderCellDef> Valor </th>
+        <th mat-header-cell *matHeaderCellDef> Valor </th>
         <td mat-cell *matCellDef="let orden"> {{orden.valor}} </td>
       </ng-container>
 
       <ng-container matColumnDef="prioritario">
-        <th class="" mat-header-cell *matHeaderCellDef> Prioritario </th>
+        <th mat-header-cell *matHeaderCellDef> Prioritario </th>
         <td mat-cell *matCellDef="let orden">
           <mat-checkbox [checked]="orden.prioritario"></mat-checkbox>
         </td>
@@ -83,8 +83,14 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
     </table>
-    <mat-paginator class="shadow" #paginator [pageSizeOptions]="[3, 5, 10, 25, 100]" aria-label="Select page"> </mat-paginator>
+    <mat-paginator class="shadow small-paginator" #paginator [pageSizeOptions]="[2, 5, 10, 20]" aria-label="Select page"> </mat-paginator>
 
+    <div class="row mt-4 mb-4">
+      <span >
+        <button
+        style="width: 100% !important;" mat-fab extended color="accent" (click)="guardarRuta()" [disabled]="!readyToAdd">Guardar Ruta</button>
 
+      </span>
+    </div>
 </div>
 

@@ -57,7 +57,12 @@ export class AddRouteComponent implements OnInit{
 
   readonly dialogRef = inject(MatDialogRef<AddRouteComponent>);
   readonly data = inject<Ruta>(MAT_DIALOG_DATA);
-  route = this.data;
+  route = this.data || {
+    id_ruta: 0,
+    conductor: 0,
+    fecha_entrega: '',
+    notas: ''
+  };
   driversService = inject(DriversService);
   apiService = inject(ApiService);
   private _snackBar = inject(MatSnackBar);
@@ -117,6 +122,11 @@ export class AddRouteComponent implements OnInit{
   findRutaExt(value: string) {
     // Almacena las ordenes precargadas
     let tempOrders : Orden[] = [];
+
+    // Inicializar datos del formulario en nueva busqueda
+    this.routeForm.reset();
+    this.dataSource = new MatTableDataSource<Orden>([]);
+    this.dataSource.paginator = this.paginator;
 
     // Se verifica si existe la ruta en el sistema
     this.apiService.getRuta(parseInt(value)).subscribe({
@@ -188,6 +198,13 @@ export class AddRouteComponent implements OnInit{
         }
       );
     }
+
+  }
+
+
+  guardarRuta() {
+    console.log(this.routeForm.value);
+    console.log(this.dataSource.data);
 
   }
 

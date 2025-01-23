@@ -1,3 +1,21 @@
+@use '@angular/material' as mat;
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root .small-table {
+  @include mat.table-overrides((
+    header-container-height: 30px,
+    row-item-container-height: 30px,
+  ));
+}
+
+:root .small-paginator {
+  @include mat.paginator-overrides((
+    container-size: 35px,
+    form-field-container-height: 30px,
+    form-field-container-vertical-padding: 1px
+  ));
+}
+
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
