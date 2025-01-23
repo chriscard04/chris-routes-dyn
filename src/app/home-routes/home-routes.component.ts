@@ -4,6 +4,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
 import { AddRouteComponent } from '../add-route/add-route.component'
 import {
   MAT_DIALOG_DATA,
@@ -26,6 +28,7 @@ import { DriversService } from '../services/drivers.service'
   imports: [
     MatCardModule,
     MatTableModule,
+    MatButtonModule,
     MatIconModule,
     MatPaginator,
     HttpClientModule,
@@ -95,10 +98,21 @@ export class HomeRoutesComponent implements AfterViewInit{
   openRoute(route: Ruta) {
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: route,
-      height: '400px',
-      width: '600px',
+      height: '800px',
+      width: '700px',
     });
 
+    dialogRef.componentInstance.isEditRoute = true;
+  }
+
+  newRoute() {
+    const dialogRef = this.dialog.open(AddRouteComponent, {
+      data: null,
+      height: '800px',
+      width: '700px',
+    });
+
+    dialogRef.componentInstance.isEditRoute = false;
   }
 
 }

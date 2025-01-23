@@ -1,8 +1,14 @@
 const express = require('express');
 const { Pool } = require('pg');
+const cors = require('cors');
 
 const app = express();
 const port = 3011;
+
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:4200' // Allow requests from your Angular application
+}));
 
 // Configura la conexión a PostgreSQL
 const pool = new Pool({

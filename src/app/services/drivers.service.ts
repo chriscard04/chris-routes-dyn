@@ -34,7 +34,7 @@ export class DriversService {
     }
   }
 
-  async getConductor(id: string): Promise<string | null> {
+  async getConductor(id: string): Promise<string | null > {
     try {
       if (this.drivers.length === 0) {
         await this.cargarConductores();
@@ -48,7 +48,7 @@ export class DriversService {
     }
   }
 
-  async getConductorData(id: string): Promise<Conductor> {
+  async getConductorData(id: string = ''): Promise<Conductor> {
     try {
       if (this.drivers.length === 0) {
         await this.cargarConductores();

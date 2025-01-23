@@ -1,3 +1,5 @@
+<h2>Lista de Rutas</h2>
+
 <table class="shadow" mat-table [dataSource]="dataSource">
 
   <ng-container matColumnDef="Ruta">
@@ -30,3 +32,11 @@
 </table>
 
 <mat-paginator class="shadow" #paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page"> </mat-paginator>
+
+
+<br><br>
+
+<button mat-fab extended (click)="newRoute()">
+  <mat-icon>add</mat-icon>
+  Añadir Ruta
+</button>
