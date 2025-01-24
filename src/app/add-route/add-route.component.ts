@@ -26,6 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialogComponent } from '../confirmation/confirmation.component';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -47,7 +48,8 @@ import {MatIconModule} from '@angular/material/icon';
     MatButtonModule,
     CommonModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule
   ],
   templateUrl: './add-route.component.html',
   styleUrl: './add-route.component.scss',
@@ -159,6 +161,12 @@ export class AddRouteComponent implements OnInit{
             this.valorTotal += order.valor;
           }
 
+          this._snackBar.open('La ruta existe en el sistema', 'Redirigido a Editar',{
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top'
+          });
+
         } else {
           console.log('Ha ocurrido un error. Detalles: ', resp.error.message);
         }
@@ -204,8 +212,22 @@ export class AddRouteComponent implements OnInit{
             }
             this.dataSource = new MatTableDataSource<Orden>(tempOrders);
             this.dataSource.paginator = this.paginator;
+            if (this.readyToAdd) {
+              this._snackBar.open('La ruta existe en el servicio externo', 'Precargado',{
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+          }
           } else {
             console.log('Ha ocurrido un error. Detalles: ', resp.error.message);
+            if (!this.isEditRoute && !this.readyToAdd) {
+              this._snackBar.open('Upss la ruta no existe', 'No podemos continuar',{
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+            }
           }
 
         },
@@ -214,13 +236,6 @@ export class AddRouteComponent implements OnInit{
           // Handle the error
         },
         complete: () => {
-        /*  if (!this.isEditRoute && !this.readyToAdd) {
-            this._snackBar.open('Upss la ruta no existe', 'No podemos continuar',{
-              duration: 5000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            });
-          } */
         }
         }
       );
@@ -252,7 +267,7 @@ export class AddRouteComponent implements OnInit{
       this.apiService.crearRuta(rutaFormValue).subscribe({
         next: (response: any) => {
           if (response.message) {
-            this.dialogRef.close('Datos Guardados!');
+            this.dialogRef.close({type: 'success', message: `La ruta #${rutaFormValue.id_ruta} ha sido creada correctamente!`});
           }
         },
         error: (err) => {
@@ -268,7 +283,7 @@ export class AddRouteComponent implements OnInit{
       this.apiService.editarRuta(rutaFormValue).subscribe({
         next: (response: any) => {
           if (response.message) {
-            this.dialogRef.close('Datos Actualizados!');
+            this.dialogRef.close({type: 'success', message: `La ruta #${rutaFormValue.id_ruta} ha sido actualizada correctamente!`});
           }
         },
         error: (err) => {
@@ -294,7 +309,7 @@ export class AddRouteComponent implements OnInit{
         this.apiService.eliminarRuta(this.routeForm.value.id_ruta).subscribe({
           next: (response: any) => {
             if (response.message === 'success') {
-              this.dialogRef.close('Ruta Eliminada!');
+              this.dialogRef.close({type: 'error', message:`Se ha eliminado correctamente la Ruta #${this.routeForm.value.id_ruta} y sus ordenes.`});
             }
           },
           error: (err) => {

@@ -16,3 +16,9 @@ mat-form-field {
   flex-direction: column;
   align-items: flex-end;
 }
+
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 10px;
+}

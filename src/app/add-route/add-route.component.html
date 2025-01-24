@@ -1,7 +1,7 @@
 <mat-toolbar class="p-4 position-sticky top-0 bg-white" style="z-index: 99;">
   <span class="text-primary">{{isEditRoute ? 'Ver y Editar' : 'Añadir'}} Ruta</span>
   <span class="spacer"></span>
-  <button mat-icon-button [mat-dialog-close]="false">
+  <button mat-icon-button [mat-dialog-close]="false" tabindex="99">
     <mat-icon>close</mat-icon>
   </button>
 </mat-toolbar>
@@ -106,18 +106,9 @@
         </div>
       }
       <div class="col-auto ms-auto">
-        <button mat-raised-button (click)="guardarRuta()">Aceptar</button>
+        <button mat-raised-button (click)="guardarRuta()">Guardar</button>
         <button mat-button class="mx-1" [mat-dialog-close]="false">Cancelar</button>
       </div>
     </div>
-
-  <!--   <div class="row mt-1 mb-4">
-      <div class="d-flex justify-content-start">
-      </div>
-      <div class="d-flex justify-content-end">
-        <button mat-raised-button color="primary" (click)="guardarRuta()">Aceptar</button>
-        <button mat-raised-button color="accent" >Cancelar</button>
-      </div>
-    </div> -->
 </div>
 

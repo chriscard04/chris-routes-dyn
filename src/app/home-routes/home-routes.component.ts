@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, inject, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -20,6 +20,7 @@ import { Ruta, Orden } from '../interfaces/route.interface'
 import { HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../services/api.service'
 import { DriversService } from '../services/drivers.service'
+import { ConfirmDialogComponent } from '../confirmation/confirmation.component';
 
 
 
@@ -56,6 +57,12 @@ export class HomeRoutesComponent implements AfterViewInit{
     { name: 'Ordenes Entrega' },
     { name: 'Notas' }
   ];
+
+  isToastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  @ViewChild('toastContainer', { static: true }) toastContainer!: ElementRef;
 
   constructor(){
     this.getRutas();
@@ -107,8 +114,11 @@ export class HomeRoutesComponent implements AfterViewInit{
     dialogRef.componentInstance.isEditRoute = true;
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
-      this.getRutas();
+      if(result !== false){
+        console.log(result);
+        this.showToast(result.message, result.type)
+        this.getRutas();
+      }
     });
   }
 
@@ -122,9 +132,56 @@ export class HomeRoutesComponent implements AfterViewInit{
     dialogRef.componentInstance.isEditRoute = false;
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
-      this.getRutas();
+      if(result !== false){
+        console.log(result);
+        this.showToast(result.message, result.type);
+        this.getRutas();
+      }
     });
   }
 
+
+  showToast(message: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = message;
+    this.isToastVisible = true;
+    this.toastType = type;
+
+    setTimeout(() => {
+      this.hideToast();
+    }, 5000);
+  }
+
+  hideToast() {
+    this.isToastVisible = false;
+  }
+
+
+
+  deleteRoute(id: number) {
+    // ConfirmDialogComponent
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: `¿Está seguro de eliminar la ruta ${id}?`,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.apiService.eliminarRuta(id).subscribe({
+          next: (response: any) => {
+            if (response.message === 'success') {
+              this.showToast(`Se ha eliminado correctamente la Ruta #${id} y sus ordenes.`, 'error');
+              this.getRutas();
+            }
+          },
+          error: (err) => {
+            console.log('An error occurred:', err);
+            // Handle the error
+          },
+          complete: () => {
+            console.log('Request completed.');
+          }
+          }
+        );
+      }
+    });
+  }
 }
