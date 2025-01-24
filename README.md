@@ -33,28 +33,24 @@ chriscard11@gmail.com
 ## Instalación y Configuración
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/usuario/repo.git
-   cd repo
+   [git clone https://github.com/usuario/repo.git](https://github.com/chriscard04/chris-routes-dyn.git)
+   cd chris-routes-dyn
    ```
 
 2. **Configuración del Frontend**
    - Navegar al directorio del frontend.
    ```bash
-   cd frontend
+   cd chris-routes-dyn
    ```
    - Instalar las dependencias.
    ```bash
    npm install
    ```
-   - Ejecutar la aplicación.
-   ```bash
-   ng serve
-   ```
 
 3. **Configuración del Backend**
    - Navegar al directorio del backend.
    ```bash
-   cd api
+   cd chris-routes-dyn/api
    ```
    - Instalar las dependencias.
    ```bash
@@ -72,7 +68,7 @@ chriscard11@gmail.com
    ```
    
 4. **Configuración de la Base de Datos**
-   - Basta con autenticar correctamente la base de datos PostgreSQL.
+   - Solo es necesario autenticar correctamente la base de datos PostgreSQL.
    - El backend crea las tablas automaticamente en caso que no existan.
 
 # Ejecución
@@ -80,7 +76,8 @@ chriscard11@gmail.com
    ```bash
    npm start
    ```
-   Ya que se integró en el package.json los comandos para ejecutar el api y emular el servicio externo
+   
+   Ya que se integró en el package.json los comandos para ejecutar el backend y emular el servicio externo
    ```bash
    "start": "concurrently \"npx json-server public/assets/db.json\" \"node api/db-api.js\" \"ng serve\"",
    ```
