@@ -31,30 +31,26 @@ chriscard11@gmail.com
 
 
 ## Instalación y Configuración
-1. **Clonar el repositorio**
+1. **Clonar el repositorio público:** [https://github.com/usuario/repo.git](https://github.com/chriscard04/chris-routes-dyn.git)
    ```bash
    git clone https://github.com/usuario/repo.git
-   cd repo
+   cd chris-routes-dyn
    ```
 
 2. **Configuración del Frontend**
    - Navegar al directorio del frontend.
    ```bash
-   cd frontend
+   cd chris-routes-dyn
    ```
    - Instalar las dependencias.
    ```bash
    npm install
    ```
-   - Ejecutar la aplicación.
-   ```bash
-   ng serve
-   ```
 
 3. **Configuración del Backend**
    - Navegar al directorio del backend.
    ```bash
-   cd api
+   cd chris-routes-dyn/api
    ```
    - Instalar las dependencias.
    ```bash
@@ -72,7 +68,7 @@ chriscard11@gmail.com
    ```
    
 4. **Configuración de la Base de Datos**
-   - Basta con autenticar correctamente la base de datos PostgreSQL.
+   - Solo es necesario autenticar correctamente la base de datos PostgreSQL.
    - El backend crea las tablas automaticamente en caso que no existan.
 
 # Ejecución
@@ -80,8 +76,27 @@ chriscard11@gmail.com
    ```bash
    npm start
    ```
-   Ya que se integró en el package.json los comandos para ejecutar el api y emular el servicio externo
+   Ya que se integró en el package.json los comandos para ejecutar el backend y emular el servicio externo
    ```bash
    "start": "concurrently \"npx json-server public/assets/db.json\" \"node api/db-api.js\" \"ng serve\"",
    ```
+
+
+# Capturas Demostrativas
+
+## Agregar nueva ruta
+![Crear Ruta](https://github.com/user-attachments/assets/0bb278ab-6d7b-41f4-bdb2-26aea4b7cd38)
+
+## Buscar ruta existente y Editar
+![Editar Ruta](https://github.com/user-attachments/assets/2fb03ac7-77dd-4418-aa32-60ffb53481f5)
+
+## Eliminar Ruta
+![Eliminar Ruta](https://github.com/user-attachments/assets/cf69b885-a80c-417d-8a77-263da51fc5ea)
+
+## Editar Conductor
+![Editar Conductor](https://github.com/user-attachments/assets/4497fe6b-b5ce-44d3-895d-f9972a383c24)
+
+
+
+   
 
