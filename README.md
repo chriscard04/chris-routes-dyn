@@ -31,9 +31,9 @@ chriscard11@gmail.com
 
 
 ## Instalación y Configuración
-1. **Clonar el repositorio**
+1. **Clonar el repositorio público:** [https://github.com/usuario/repo.git](https://github.com/chriscard04/chris-routes-dyn.git)
    ```bash
-   [git clone https://github.com/usuario/repo.git](https://github.com/chriscard04/chris-routes-dyn.git)
+   git clone https://github.com/usuario/repo.git
    cd chris-routes-dyn
    ```
 
