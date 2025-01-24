@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 // Customize the entire app. Change :root to your selector if you want to scope the styles.
 :root .small-table {
@@ -17,6 +17,11 @@
 }
 
 /* You can add global styles to this file, and also import other style files */
+
+.spacer {
+  flex: 1 1 auto;
+}
+
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

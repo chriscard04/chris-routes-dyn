@@ -1,5 +1,9 @@
 <mat-toolbar class="p-4 position-sticky top-0 bg-white" style="z-index: 99;">
   <span class="text-primary">{{isEditRoute ? 'Ver y Editar' : 'Añadir'}} Ruta</span>
+  <span class="spacer"></span>
+  <button mat-icon-button [mat-dialog-close]="false">
+    <mat-icon>close</mat-icon>
+  </button>
 </mat-toolbar>
 <div class="px-4 mt-3">
   <form [formGroup]="routeForm" class="container">
@@ -69,7 +73,7 @@
 
       <ng-container matColumnDef="valor">
         <th mat-header-cell *matHeaderCellDef> Valor </th>
-        <td mat-cell *matCellDef="let orden"> {{orden.valor}} </td>
+        <td mat-cell *matCellDef="let orden"> ${{ orden.valor | number:'1.2-2' }} </td>
       </ng-container>
 
       <ng-container matColumnDef="prioritario">
@@ -85,12 +89,35 @@
     </table>
     <mat-paginator class="shadow small-paginator" #paginator [pageSizeOptions]="[2, 5, 10, 20]" aria-label="Select page"> </mat-paginator>
 
-    <div class="row mt-4 mb-4">
-      <span >
-        <button
-        style="width: 100% !important;" mat-fab extended color="accent" (click)="guardarRuta()" [disabled]="!readyToAdd">Guardar Ruta</button>
+    <div class="container mt-3">
+      <div class="row">
+          <div class="valor-total">
+            <p class="fw-bold mb-0">Valor Total:</p>
+            <p class="fs-5">$ {{ valorTotal | number:'1.2-2' }}</p>
+          </div>
 
-      </span>
+      </div>
     </div>
+
+    <div class="row mt-1 mb-4">
+      @if (isEditRoute) {
+        <div class="col-auto">
+          <button mat-raised-button class="bg-danger text-white" (click)="eliminarRuta()">Eliminar</button>
+        </div>
+      }
+      <div class="col-auto ms-auto">
+        <button mat-raised-button (click)="guardarRuta()">Aceptar</button>
+        <button mat-button class="mx-1" [mat-dialog-close]="false">Cancelar</button>
+      </div>
+    </div>
+
+  <!--   <div class="row mt-1 mb-4">
+      <div class="d-flex justify-content-start">
+      </div>
+      <div class="d-flex justify-content-end">
+        <button mat-raised-button color="primary" (click)="guardarRuta()">Aceptar</button>
+        <button mat-raised-button color="accent" >Cancelar</button>
+      </div>
+    </div> -->
 </div>
 

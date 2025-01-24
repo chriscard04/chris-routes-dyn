@@ -36,11 +36,30 @@ export class ApiService {
     return this.http.post<Ruta>(`${this.baseUrl}/rutas`, ruta).pipe(
       catchError((error:any) => {
           console.error('An error occurred while fetching the route:', error);
-          return EMPTY ; //throwError(() => new Error('Network error'));
+          return throwError(() => new Error('Network error'));
       })
     );
   }
 
+  editarRuta(ruta: Ruta): Observable<any> {
+    const url = `${this.baseUrl}/rutas/${ruta.id_ruta}`;
+    return this.http.put<Ruta>(url, ruta).pipe(
+      catchError((error: any) => {
+        console.error('Error editing route:', error);
+        return throwError(() => new Error('Error editing route'));
+      })
+    );
+  }
+
+  eliminarRuta(id: number): Observable<any> {
+    const url = `${this.baseUrl}/rutas/${id}`;
+    return this.http.delete(url).pipe(
+      catchError((error: any) => {
+        console.error('Error deleting route:', error);
+        return throwError(() => new Error('Error deleting route'));
+      })
+    );
+  }
 
   getRoute(id: number): Observable<Route | null> {
     return this.http.get<Route>(`${this.baseUrl}/extroute/${id}`)

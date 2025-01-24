@@ -9,3 +9,10 @@ mat-form-field {
 .disable-focus{
   pointer-events: none !important;
 }
+
+.valor-total {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}

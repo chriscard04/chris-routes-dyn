@@ -14,7 +14,7 @@
 
   <ng-container matColumnDef="Fecha Entrega">
     <th class="" mat-header-cell *matHeaderCellDef> Fecha Entrega </th>
-    <td mat-cell *matCellDef="let ruta"> {{ruta.fecha_entrega}} </td>
+    <td mat-cell *matCellDef="let ruta"> {{ruta.fecha_entrega | date:'yyyy-MM-dd'}} </td>
   </ng-container>
 
   <ng-container matColumnDef="Acciones">

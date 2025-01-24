@@ -98,17 +98,24 @@ export class HomeRoutesComponent implements AfterViewInit{
   openRoute(route: Ruta) {
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: route,
-      height: '675px',
+      height: '750px',
       width: '700px',
+      hasBackdrop: true,
+      disableClose: true,
     });
 
     dialogRef.componentInstance.isEditRoute = true;
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      this.getRutas();
+    });
   }
 
   newRoute() {
     const dialogRef = this.dialog.open(AddRouteComponent, {
       data: null,
-      height: '750px',
+      height: '800px',
       width: '700px',
     });
 

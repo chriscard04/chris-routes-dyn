@@ -96,6 +96,66 @@ app.post('/rutas', async (req, res) => {
   }
 });
 
+app.put('/rutas/:id', async (req, res) => {
+  const { id } = req.params;
+  const { conductor, fecha_entrega, notas, ordenes } = req.body;
+
+  try {
+    // Actualizar la ruta principal
+    await pool.query(
+      `
+        UPDATE Ruta
+        SET conductor = $1, fecha_entrega = $2, notas = $3
+        WHERE id_ruta = $4;
+      `,
+      [conductor, fecha_entrega, notas, id]
+    );
+
+    // Actualizar las órdenes existentes
+    for (const order of ordenes) {
+      await pool.query(
+        `
+          UPDATE Orden
+          SET secuencia = $1, valor = $2, prioritario = $3
+          WHERE id_orden = $4 AND ruta_id = $5;
+        `,
+        [order.secuencia, order.valor, order.prioritario, order.id_orden, id]
+      );
+    }
+
+    res.status(200).json({message: 'success', data: { message: 'Ruta y órdenes actualizadas correctamente' }});
+  } catch (error) {
+    console.error('Error al actualizar ruta y órdenes:', error);
+    res.status(200).json({message: 'error', data: { message: 'Hubo un error al actualizar la Ruta y órdenes' }});
+  }
+});
+
+app.delete('/rutas/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Verificar si la ruta existe
+      const checkRuta = await pool.query('SELECT * FROM Ruta WHERE id_ruta = $1', [id]);
+
+      if (checkRuta.rows.length === 0) {
+          res.status(200).json({message: 'error', data: { message: 'No se hicieron cambios. No se encontró la ruta indicada.' }});
+      }
+      // Iniciar transacción
+      // Eliminar las órdenes asociadas
+      await pool.query('BEGIN');
+      await pool.query('DELETE FROM Orden WHERE ruta_id = $1', [id]);
+      // Eliminar la ruta
+      await pool.query('DELETE FROM Ruta WHERE id_ruta = $1', [id]);
+      await pool.query('COMMIT'); // Confirmar la transacción
+
+      res.status(200).json({message: 'success', data: { message: 'Ruta y órdenes eliminadas correctamente' }});
+  } catch (error) {
+      await pool.query('ROLLBACK'); // Deshacer la transacción en caso de error
+      console.error('Error al eliminar ruta y órdenes:', error);
+      res.status(200).json({message: 'error', data: { message: 'No se hicieron cambios. Hubo un error al eliminar la Ruta y órdenes.' }});
+  }
+});
+
 // Get all rutas with their orders
 app.get('/rutas', async (req, res) => {
   try {
@@ -163,7 +223,10 @@ app.get('/rutas/:id_ruta', async (req, res) => {
     `, [id_ruta]);
 
     if (result.rows.length === 0) {
-      res.json({ message: 'error', error: {message: 'No se ha encontrado la ruta en el sistema.'} });
+      return res.status(200).json({
+        message: 'error',
+        error: { message: 'No se ha encontrado la ruta en el sistema.' }
+      });
     }
 
     const ruta = {

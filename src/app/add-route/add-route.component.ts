@@ -2,6 +2,7 @@ import { Component, inject, model, OnInit, ViewChild } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogRef,
+  MatDialog, MatDialogModule
 } from '@angular/material/dialog';
 import { Ruta, Conductor, Orden, Route } from '../interfaces/route.interface'
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -22,6 +23,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { ConfirmDialogComponent } from '../confirmation/confirmation.component';
+import {MatIconModule} from '@angular/material/icon';
 
 
 @Component({
@@ -40,7 +44,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatTableModule,
     MatPaginator,
     MatCheckboxModule,
-    MatButtonModule
+    MatButtonModule,
+    CommonModule,
+    MatDialogModule,
+    MatIconModule
   ],
   templateUrl: './add-route.component.html',
   styleUrl: './add-route.component.scss',
@@ -66,6 +73,7 @@ export class AddRouteComponent implements OnInit{
   driversService = inject(DriversService);
   apiService = inject(ApiService);
   private _snackBar = inject(MatSnackBar);
+  readonly dialog = inject(MatDialog);
 
   conductores: Conductor[] = [];
   conductorSeleccionado: Conductor = {ID: '0', NAME: ''};
@@ -90,6 +98,7 @@ export class AddRouteComponent implements OnInit{
   public isEditRoute: boolean = false;
   readyToAdd: boolean = false;
   busquedaRuta: string = '';
+  valorTotal: number = 0.00;
 
   constructor() {}
 
@@ -102,6 +111,7 @@ export class AddRouteComponent implements OnInit{
 
   // Cuando es Editar, se carga el conductor
   private async cargarConductor() {
+    this.valorTotal = 0;
     const id = this.route.conductor.toString();
     if (id) {
       this.conductorSeleccionado = await this.driversService.getConductorData(id);
@@ -115,11 +125,17 @@ export class AddRouteComponent implements OnInit{
       fecha_entrega: this.route.fecha_entrega,
       notas: this.route.notas
     });
+    console.log(this.route)
+    for (const order of this.route.ordenes) {
+      this.valorTotal += order.valor;
+    }
+
     this.dataSource = new MatTableDataSource<Orden>(this.route.ordenes);
     this.dataSource.paginator = this.paginator;
   }
 
   findRutaExt(value: string) {
+    this.valorTotal = 0;
     // Almacena las ordenes precargadas
     let tempOrders : Orden[] = [];
 
@@ -138,6 +154,11 @@ export class AddRouteComponent implements OnInit{
           this.route = ruta;
           this.cargarConductor();
           this.isEditRoute = true;
+
+          for (const order of this.route.ordenes) {
+            this.valorTotal += order.valor;
+          }
+
         } else {
           console.log('Ha ocurrido un error. Detalles: ', resp.error.message);
         }
@@ -178,6 +199,7 @@ export class AddRouteComponent implements OnInit{
                   secuencia: order.sequence,
                   prioritario: order.priority
                 });
+                this.valorTotal += order.value;
               }
             }
             this.dataSource = new MatTableDataSource<Orden>(tempOrders);
@@ -226,21 +248,66 @@ export class AddRouteComponent implements OnInit{
   guardarRuta() {
     let rutaFormValue:Ruta =  this.mapToRuta(this.routeForm.value);
 
-    this.apiService.crearRuta(rutaFormValue).subscribe({
-      next: (response: any) => {
-        if (response.message) {
-          this.dialogRef.close('Datos Guardados!');
+    if(!this.isEditRoute){
+      this.apiService.crearRuta(rutaFormValue).subscribe({
+        next: (response: any) => {
+          if (response.message) {
+            this.dialogRef.close('Datos Guardados!');
+          }
+        },
+        error: (err) => {
+          console.log('An error occurred:', err);
+          // Handle the error
+        },
+        complete: () => {
+          console.log('Request completed.');
         }
-      },
-      error: (err) => {
-        console.log('An error occurred:', err);
-        // Handle the error
-      },
-      complete: () => {
-        console.log('Request completed.');
+        }
+      );
+    } else {
+      this.apiService.editarRuta(rutaFormValue).subscribe({
+        next: (response: any) => {
+          if (response.message) {
+            this.dialogRef.close('Datos Actualizados!');
+          }
+        },
+        error: (err) => {
+          console.log('An error occurred:', err);
+          // Handle the error
+        },
+        complete: () => {
+          console.log('Request completed.');
+        }
+        }
+      );
+    }
+  }
+
+  eliminarRuta() {
+    // ConfirmDialogComponent
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: `¿Está seguro de eliminar la ruta ${this.routeForm.value.id_ruta}?`,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.apiService.eliminarRuta(this.routeForm.value.id_ruta).subscribe({
+          next: (response: any) => {
+            if (response.message === 'success') {
+              this.dialogRef.close('Ruta Eliminada!');
+            }
+          },
+          error: (err) => {
+            console.log('An error occurred:', err);
+            // Handle the error
+          },
+          complete: () => {
+            console.log('Request completed.');
+          }
+          }
+        );
       }
-      }
-    );
+    });
   }
 
 }
